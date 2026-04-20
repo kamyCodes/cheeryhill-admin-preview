@@ -150,31 +150,31 @@ export default function PressRelease() {
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Headline</label>
-                <input required type="text" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold text-lg"
+                <input required type="text" className="w-full text-gray-500 px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold text-lg"
                   value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="Main Headline" />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Publication Date</label>
-                <input required type="date" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input required type="date" className="w-full text-gray-500 px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.publicationDate} onChange={(e) => setFormData({...formData, publicationDate: e.target.value})} />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Author / Team</label>
-                <input required type="text" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input required type="text" className="w-full text-gray-500 px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} />
               </div>
 
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Summary (Sub-headline)</label>
-                <input required type="text" className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input required type="text" className="w-full px-6 py-4 bg-slate-50 border text-gray-500 border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.summary} onChange={(e) => setFormData({...formData, summary: e.target.value})} placeholder="A brief hook for the news feed..." />
               </div>
 
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Full Content</label>
-                <textarea rows="10" required className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none leading-relaxed"
+                <textarea rows="10" required className="w-full text-gray-500 px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none leading-relaxed"
                   value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})} placeholder="Write the full body of the release here..." />
               </div>
 

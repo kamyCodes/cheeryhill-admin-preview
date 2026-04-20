@@ -165,7 +165,7 @@ export default function Awards() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase block mb-2 ml-1">Award Title</label>
-                <input required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold text-slate-800"
+                <input required className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold text-slate-800"
                   value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} 
                   placeholder="e.g. Best Investment Bank 2024" />
               </div>
@@ -173,27 +173,27 @@ export default function Awards() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase block mb-2 ml-1">Awarding Body</label>
-                  <input required={!editingId} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                  <input required={!editingId} className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                     value={formData.awardingBody} onChange={(e) => setFormData({...formData, awardingBody: e.target.value})} 
                     placeholder="e.g. Global Finance Magazine" />
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase block mb-2 ml-1">Year</label>
-                  <input type="number" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold"
+                  <input type="number" className="w-full px-5 py-4 bg-slate-50 border text-gray-500 border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold"
                     value={formData.year} onChange={(e) => setFormData({...formData, year: e.target.value})} />
                 </div>
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase block mb-2 ml-1">Logo URL (Optional)</label>
-                <input className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input className="w-full px-5 py-4 bg-slate-50 border text-gray-500 border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} 
                   placeholder="https://image-link.com/logo.png" />
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase block mb-2 ml-1">Brief Description</label>
-                <textarea rows="3" required={!editingId} className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none"
+                <textarea rows="3" required={!editingId} className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none"
                   value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} 
                   placeholder="Describe the significance of this award..." />
               </div>

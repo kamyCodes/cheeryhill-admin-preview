@@ -163,37 +163,37 @@ export default function Webinars() {
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Session Title</label>
-                <input required type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none transition-all font-semibold"
+                <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none transition-all font-semibold"
                   value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="The Future of REITs 2024" />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Host/Speaker</label>
-                <input required type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.speaker} onChange={(e) => setFormData({...formData, speaker: e.target.value})} placeholder="Dr. Sarah James" />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Date & Time</label>
-                <input required type="datetime-local" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input required type="datetime-local" className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
               </div>
 
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Description</label>
-                <textarea rows="3" required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none"
+                <textarea rows="3" required className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none"
                   value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Video URL (Post-Event)</label>
-                <input type="url" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input type="url" className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.videoUrl} onChange={(e) => setFormData({...formData, videoUrl: e.target.value})} placeholder="YouTube/Vimeo Link" />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Registration Link (Live)</label>
-                <input type="url" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input type="url" className="w-full px-5 py-4 text-gray-500 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.registrationLink} onChange={(e) => setFormData({...formData, registrationLink: e.target.value})} placeholder="Zoom/Google Meet" />
               </div>
 

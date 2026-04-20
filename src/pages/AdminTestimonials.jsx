@@ -184,25 +184,25 @@ export default function AdminTestimonials() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 md:col-span-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Client Name</label>
-                  <input required type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                  <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                     value={formData.clientName} onChange={(e) => setFormData({...formData, clientName: e.target.value})} />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Company</label>
-                  <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                  <input type="text" className="w-full px-5 py-4 text-gray-500 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                     value={formData.clientCompany} onChange={(e) => setFormData({...formData, clientCompany: e.target.value})} />
                 </div>
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Star Rating (1-5)</label>
-                <input type="number" min="1" max="5" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input type="number" min="1" max="5" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.rating} onChange={(e) => setFormData({...formData, rating: parseInt(e.target.value)})} />
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Client Feedback</label>
-                <textarea rows="4" required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none"
+                <textarea rows="4" required className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none"
                   value={formData.feedback} onChange={(e) => setFormData({...formData, feedback: e.target.value})} placeholder="What did they say about CherryHills?" />
               </div>
 

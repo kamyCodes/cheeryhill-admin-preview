@@ -138,7 +138,7 @@ export default function AdminMnagement() {
                 <input 
                   type="text" 
                   required
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3866A3]/10 focus:border-[#3866A3] transition-all"
+                  className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3866A3]/10 focus:border-[#3866A3] transition-all"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   placeholder="e.g. John Doe"
@@ -149,7 +149,7 @@ export default function AdminMnagement() {
                 <input 
                   type="email" 
                   required
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3866A3]/10 focus:border-[#3866A3] transition-all"
+                  className="w-full px-5 py-4 bg-slate-50 border text-gray-500 border-slate-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3866A3]/10 focus:border-[#3866A3] transition-all"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   placeholder="admin@cherryhills.com"
@@ -160,7 +160,7 @@ export default function AdminMnagement() {
                 <input 
                   type="password" 
                   required
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3866A3]/10 focus:border-[#3866A3] transition-all"
+                  className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#3866A3]/10 focus:border-[#3866A3] transition-all"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                   placeholder="••••••••"

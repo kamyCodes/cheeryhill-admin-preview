@@ -156,31 +156,31 @@ export default function AdminServices() {
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Service Title</label>
-                <input required type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none transition-all"
+                <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none transition-all"
                   value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="e.g. Wealth Management" />
               </div>
               
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Icon URL (Cloudinary)</label>
-                <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 text-gray-500 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.icon} onChange={(e) => setFormData({...formData, icon: e.target.value})} placeholder="https://..." />
               </div>
 
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Summary (Catchy Hook)</label>
-                <input required type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.summary} onChange={(e) => setFormData({...formData, summary: e.target.value})} placeholder="Brief one-liner..." />
               </div>
 
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Full Description</label>
-                <textarea rows="4" required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none"
+                <textarea rows="4" required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none text-gray-500 resize-none"
                   value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Detailed explanation..." />
               </div>
 
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Key Features (Comma Separated)</label>
-                <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 text-gray-500 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.features} onChange={(e) => setFormData({...formData, features: e.target.value})} placeholder="Risk Assessment, Portfolio Tracking, 24/7 Support" />
               </div>
 

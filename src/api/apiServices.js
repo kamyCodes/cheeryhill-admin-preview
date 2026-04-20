@@ -2,67 +2,147 @@
 
 
 
-import axios from "axios";
-import toast from "react-hot-toast";   // Add this import if not already present
+// import axios from "axios";
+// import toast from "react-hot-toast";   // Add this import if not already present
 
-const base_url = "https://investmentwebsite-backend.onrender.com";
+// const base_url = "https://investmentwebsite-backend.onrender.com";
+
+// // ------------------- MAIN API CLIENT -------------------
+// export const apiClient = axios.create({
+//   baseURL: base_url,
+//   headers: { "Content-Type": "application/json" },
+// });
+
+// // Request Interceptor - Attach Token
+// apiClient.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     } else {
+//       console.warn(`⚠️ No token for request: ${config.url}`);
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
+// // Response Interceptor - Handle Invalid Token / 401
+// apiClient.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     if (error.response?.status === 401) {
+//       const message = error.response?.data?.message || "";
+//       if (message.toLowerCase().includes("invalid token") || message.toLowerCase().includes("unauthorized")) {
+//         console.error("🚨 Invalid token detected - logging out");
+//         localStorage.removeItem("token");
+//         localStorage.removeItem("admin");
+//         toast.error("Session expired. Please login again.");
+//         window.location.href = "/login";   // Force redirect
+//       }
+//     }
+//     return Promise.reject(error);
+//   }
+// );
+
+// // ------------------- AUTH -------------------
+
+// export const loginAdmin = async ({ email, password }) => {
+//   try {
+//     const res = await apiClient.post("/api/v1/auth/login", { email, password });
+
+//     // The network res shows the object is "admin", not "user"
+//     const { token, admin } = res.data.data; 
+
+//     if (!token) throw new Error("No token received");
+
+//     localStorage.setItem("token", token);
+//     localStorage.setItem("admin", JSON.stringify(admin));
+
+//     return { token, admin }; // Return 'admin' specifically
+//   } catch (err) {
+//     throw err;
+//   }
+// };
+
+
+
+
+import axios from "axios";
+import toast from "react-hot-toast";
+
+const base_url = "https://cherry.dealdrivetechnology.com";
 
 // ------------------- MAIN API CLIENT -------------------
+
 export const apiClient = axios.create({
   baseURL: base_url,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// Request Interceptor - Attach Token
+// ------------------- REQUEST INTERCEPTOR -------------------
+
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token) {
+
+    // Skip attaching token for login route
+    if (token && !config.url.includes("/auth/login")) {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn(`⚠️ No token for request: ${config.url}`);
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor - Handle Invalid Token / 401
+// ------------------- RESPONSE INTERCEPTOR -------------------
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       const message = error.response?.data?.message || "";
-      if (message.toLowerCase().includes("invalid token") || message.toLowerCase().includes("unauthorized")) {
-        console.error("🚨 Invalid token detected - logging out");
+
+      if (
+        message.toLowerCase().includes("invalid token") ||
+        message.toLowerCase().includes("unauthorized")
+      ) {
+        console.error("🚨 Session expired");
+
         localStorage.removeItem("token");
         localStorage.removeItem("admin");
+
         toast.error("Session expired. Please login again.");
-        window.location.href = "/login";   // Force redirect
+
+        window.location.href = "/login-in";
       }
     }
+
     return Promise.reject(error);
   }
 );
 
-// ------------------- AUTH -------------------
+// ------------------- AUTH SERVICE -------------------
 
 export const loginAdmin = async ({ email, password }) => {
-  try {
-    const res = await apiClient.post("/api/v1/auth/login", { email, password });
+  const res = await apiClient.post("/api/v1/auth/login", {
+    email,
+    password,
+  });
 
-    // The network res shows the object is "admin", not "user"
-    const { token, admin } = res.data.data; 
+  const { token, admin } = res.data.data;
 
-    if (!token) throw new Error("No token received");
-
-    localStorage.setItem("token", token);
-    localStorage.setItem("admin", JSON.stringify(admin));
-
-    return { token, admin }; // Return 'admin' specifically
-  } catch (err) {
-    throw err;
+  if (!token) {
+    throw new Error("No token received from server");
   }
+
+  localStorage.setItem("token", token);
+  localStorage.setItem("admin", JSON.stringify(admin));
+
+  return { token, admin };
 };
 
 

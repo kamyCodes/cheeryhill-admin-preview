@@ -165,7 +165,7 @@ export default function Faqs() {
                 <div className="col-span-2 md:col-span-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase block mb-2">Category</label>
                   <select 
-                    className="w-full px-5 py-4 bg-slate-50 border rounded-2xl outline-none font-bold text-sm"
+                    className="w-full px-5 py-4 bg-slate-50 border text-gray-500 rounded-2xl outline-none font-bold text-sm"
                     value={formData.category} 
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
                   >
@@ -176,25 +176,25 @@ export default function Faqs() {
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase block mb-2">Order</label>
-                  <input type="number" className="w-full px-5 py-4 bg-slate-50 border rounded-2xl outline-none"
+                  <input type="number" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border rounded-2xl outline-none"
                     value={formData.order} onChange={(e) => setFormData({...formData, order: e.target.value})} />
                 </div>
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase block mb-2">Question</label>
-                <input required className="w-full px-5 py-4 bg-slate-50 border rounded-2xl outline-none font-bold"
+                <input required className="w-full px-5 py-4 bg-slate-50 text-gray-500 border rounded-2xl outline-none font-bold"
                   value={formData.question} onChange={(e) => setFormData({...formData, question: e.target.value})} />
               </div>
 
               <div>
                 <label className="text-[10px] font-black text-slate-400 uppercase block mb-2">Answer</label>
-                <textarea rows="4" required className="w-full px-5 py-4 bg-slate-50 border rounded-2xl outline-none resize-none"
+                <textarea rows="4" required className="w-full text-gray-500 px-5 py-4 bg-slate-50 border rounded-2xl outline-none resize-none"
                   value={formData.answer} onChange={(e) => setFormData({...formData, answer: e.target.value})} />
               </div>
 
               <div className="flex gap-4 pt-4">
-                <button type="button" onClick={closeModal} className="flex-1 py-4 bg-slate-100 font-bold rounded-2xl">Cancel</button>
+                <button type="button" onClick={closeModal} className="flex-1 py-4 bg-slate-100 font-bold rounded-2xl text-gray-500">Cancel</button>
                 <button type="submit" disabled={isSubmitting} className="flex-1 py-4 bg-[#3866A3] text-white font-bold rounded-2xl shadow-lg shadow-blue-900/10">
                   {isSubmitting ? "Saving..." : editingId ? "Update FAQ" : "Add FAQ"}
                 </button>

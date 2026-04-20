@@ -179,42 +179,42 @@ export default function Leadership() {
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Full Name</label>
-                <input required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold"
+                <input required className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold"
                   value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Position</label>
-                <input required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input required className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.position} onChange={(e) => setFormData({...formData, position: e.target.value})} />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Email Address</label>
-                <input type="email" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input type="email" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 text-gray-500 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
               </div>
 
               <div className="col-span-2 md:col-span-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">LinkedIn URL</label>
-                <input type="url" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input type="url" className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.linkedin} onChange={(e) => setFormData({...formData, linkedin: e.target.value})} />
               </div>
 
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Hierarchy Order (e.g., 1 for CEO)</label>
-                <input type="number" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <input type="number" className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.order} onChange={(e) => setFormData({...formData, order: e.target.value})} />
               </div>
 
               <div className="col-span-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Executive Biography</label>
-                <textarea rows="4" required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none leading-relaxed"
+                <textarea rows="4" required className="w-full px-5 py-4 bg-slate-50 border text-gray-500 border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none leading-relaxed"
                   value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})} />
               </div>
 
               <div className="col-span-2 flex gap-4 mt-6">
-                <button type="button" onClick={closeModal} className="flex-1 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all">Cancel</button>
+                <button type="button" onClick={closeModal} className="flex-1 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all text-gray-500">Cancel</button>
                 <button type="submit" disabled={isSubmitting} className="flex-1 py-4 bg-[#3866A3] text-white font-bold rounded-2xl hover:bg-[#2d5284] transition-all flex items-center justify-center gap-2">
                   {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                   {editingId ? "Update Profile" : "Save Leader"}
