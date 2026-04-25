@@ -78,7 +78,7 @@ const base_url = "https://cherry.dealdrivetechnology.com";
 export const apiClient = axios.create({
   baseURL: base_url,
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json", // <--- THIS IS THE PROBLEM
   },
 });
 
@@ -352,18 +352,26 @@ export const deleteContact = async (id) => {
 
 // ------------------- LEADERSHIP MANAGEMENT -------------------
 
+// ------------------- LEADERSHIP MANAGEMENT -------------------
+
 export const getAllLeadership = async () => {
   const res = await apiClient.get("/api/v1/admin/leadership");
   return res.data.data;
 };
 
 export const createLeadership = async (data) => {
-  const res = await apiClient.post("/api/v1/admin/leadership", data);
+  // We add the config object as the second argument for POST
+  const res = await apiClient.post("/api/v1/admin/leadership", data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return res.data.data;
 };
 
 export const updateLeadership = async (id, data) => {
-  const res = await apiClient.put(`/api/v1/admin/leadership/${id}`, data);
+  // We add the config object as the third argument for PUT
+  const res = await apiClient.put(`/api/v1/admin/leadership/${id}`, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return res.data.data;
 };
 

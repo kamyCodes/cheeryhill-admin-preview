@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { 
-  getAllLeadership, createLeadership, 
-  updateLeadership, deleteLeadership 
-} from "../api/apiServices";
+  getAllLeadership, 
+  createLeadership, 
+  updateLeadership, 
+  deleteLeadership 
+} from "../api/apiServices"; // Added missing imports
 import { 
   UserPlus, Trash2, Edit3, Loader2, 
   Linkedin, Mail, User, Briefcase, 
@@ -36,7 +38,7 @@ export default function Leadership() {
   const fetchMembers = async () => {
     try {
       const data = await getAllLeadership();
-      setMembers(data.sort((a, b) => a.order - b.order));
+      setMembers(data.sort((a, b) => (a.order || 0) - (b.order || 0)));
     } catch (err) {
       toast.error("Failed to load team members");
     } finally {
@@ -47,43 +49,55 @@ export default function Leadership() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+      if (!validTypes.includes(file.type)) {
+        return toast.error("Please upload a valid image (JPG, PNG, or WebP)");
+      }
       if (file.size > 2 * 1024 * 1024) {
         return toast.error("Image too large (Max 2MB)");
       }
-      setFormData({ ...formData, image: file });
+      setFormData(prev => ({ ...prev, image: file }));
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    const loadingToast = toast.loading(editingId ? "Updating profile..." : "Adding new leader...");
 
-    const data = new FormData();
-    data.append("name", formData.name);
-    data.append("position", formData.position);
-    data.append("bio", formData.bio);
-    data.append("email", formData.email);
-    data.append("linkedin", formData.linkedin);
-    data.append("order", formData.order);
-    
-    if (formData.image instanceof File) {
-      data.append("image", formData.image);
+    if (!editingId && !formData.image) {
+      return toast.error("Please upload a profile image");
     }
 
+    setIsSubmitting(true);
+    const loadingToast = toast.loading(editingId ? "Updating profile..." : "Publishing profile...");
+
     try {
+      const data = new FormData();
+      data.append("name", formData.name.trim());
+      data.append("position", formData.position.trim());
+      data.append("bio", formData.bio.trim());
+      data.append("order", formData.order);
+      
+      if (formData.email) data.append("email", formData.email.trim());
+      if (formData.linkedin) data.append("linkedin", formData.linkedin.trim());
+
+      if (formData.image instanceof File) {
+        data.append("image", formData.image);
+      }
+
+      // Now using the imported services which handle the headers correctly
       if (editingId) {
         await updateLeadership(editingId, data);
-        toast.success("Leader profile updated successfully!", { id: loadingToast });
       } else {
         await createLeadership(data);
-        toast.success("New leader added successfully!", { id: loadingToast });
       }
+
+      toast.success("Success!", { id: loadingToast });
       closeModal();
       fetchMembers();
     } catch (err) {
-      toast.error(err.response?.data?.message || "Operation failed", { id: loadingToast });
+      const errMsg = err.response?.data?.message || "Server error during upload";
+      toast.error(typeof errMsg === 'object' ? "Cloudinary upload failed" : errMsg, { id: loadingToast });
     } finally {
       setIsSubmitting(false);
     }
@@ -92,15 +106,15 @@ export default function Leadership() {
   const handleEdit = (member) => {
     setEditingId(member._id);
     setFormData({
-      name: member.name,
-      position: member.position,
-      bio: member.bio,
+      name: member.name || "",
+      position: member.position || "",
+      bio: member.bio || "",
       email: member.email || "",
       linkedin: member.linkedin || "",
-      order: member.order,
-      image: null
+      order: member.order || 1,
+      image: null 
     });
-    setImagePreview(member.image);
+    setImagePreview(member.image); 
     setShowModal(true);
   };
 
@@ -125,7 +139,6 @@ export default function Leadership() {
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen">
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between mt-10 items-start md:items-center mb-10 gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Corporate Leadership</h1>
@@ -133,7 +146,7 @@ export default function Leadership() {
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-900/10 active:scale-95"
+          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg active:scale-95"
         >
           <UserPlus size={18} /> Add Member
         </button>
@@ -185,10 +198,9 @@ export default function Leadership() {
         </div>
       )}
 
-      {/* Moderate Profile Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-xl rounded-[2rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-white w-full max-w-xl rounded-[2rem] shadow-2xl overflow-hidden">
             <div className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
               <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">
                 {editingId ? "Edit Profile" : "New Leader"}
@@ -198,7 +210,6 @@ export default function Leadership() {
             
             <form onSubmit={handleSubmit} className="p-8 max-h-[80vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-x-5 gap-y-4">
-                {/* Image Section - Integrated into Grid */}
                 <div className="col-span-2 flex items-center gap-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 mb-2">
                   <div className="relative group cursor-pointer" onClick={() => fileInputRef.current.click()}>
                     <div className="w-16 h-16 rounded-xl bg-white border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden">
@@ -211,53 +222,53 @@ export default function Leadership() {
                   <div>
                     <h4 className="text-sm font-bold text-slate-700">Profile Photo</h4>
                     <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={handleFileChange} />
-                    <button type="button" onClick={() => fileInputRef.current.click()} className="text-[10px] font-black text-[#3866A3] uppercase hover:underline">Click to upload</button>
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">Max 2MB. JPG/PNG.</p>
                   </div>
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Full Name</label>
-                  <input required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none font-bold text-slate-700 text-sm transition-all"
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Full Name *</label>
+                  <input required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none font-bold text-slate-700 text-sm"
                     value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Position</label>
-                  <input required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm transition-all"
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Position *</label>
+                  <input required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm"
                     value={formData.position} onChange={(e) => setFormData({...formData, position: e.target.value})} />
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Email</label>
-                  <input type="email" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm transition-all"
+                  <input type="email" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm"
                     value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Rank Order</label>
-                  <input type="number" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm transition-all"
+                  <input type="number" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm"
                     value={formData.order} onChange={(e) => setFormData({...formData, order: e.target.value})} />
                 </div>
 
                 <div className="col-span-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">LinkedIn URL</label>
-                  <input type="url" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm transition-all"
+                  <input type="url" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm"
                     value={formData.linkedin} onChange={(e) => setFormData({...formData, linkedin: e.target.value})} />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Biography</label>
-                  <textarea rows="3" required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none resize-none leading-relaxed text-slate-600 text-sm transition-all"
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Biography *</label>
+                  <textarea rows="3" required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none resize-none leading-relaxed text-slate-600 text-sm"
                     value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})} />
                 </div>
               </div>
 
               <div className="flex gap-3 mt-8">
-                <button type="button" onClick={closeModal} className="flex-1 py-3 bg-slate-100 text-slate-500 font-bold rounded-xl hover:bg-slate-200 transition-all text-xs">Discard</button>
+                <button type="button" onClick={closeModal} className="flex-1 py-3 bg-slate-100 text-slate-500 font-bold rounded-xl text-xs">Discard</button>
                 <button 
                   type="submit" 
                   disabled={isSubmitting} 
-                  className="flex-[2] py-3 bg-[#3866A3] text-white font-bold rounded-xl hover:bg-[#2d5284] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10 disabled:opacity-70 text-xs"
+                  className="flex-[2] py-3 bg-[#3866A3] text-white font-bold rounded-xl hover:bg-[#2d5284] transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 text-xs"
                 >
                   {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                   {editingId ? "Update Profile" : "Publish Profile"}
