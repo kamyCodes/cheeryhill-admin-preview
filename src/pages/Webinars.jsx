@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { getAllWebinars, createWebinar, deleteWebinar } from "../api/apiServices";
+// 1. Ensure updateWebinar is imported
+import { getAllWebinars, createWebinar, deleteWebinar, updateWebinar } from "../api/apiServices";
 import { 
   Video, Plus, Calendar, Clock, User, ExternalLink, 
-  Trash2, PlayCircle, Loader2, Globe, Monitor, X, Save
+  Trash2, PlayCircle, Loader2, Globe, Monitor, X, Save, Pencil
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -11,6 +12,9 @@ export default function Webinars() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 2. State to track which webinar we are editing
+  const [editingId, setEditingId] = useState(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -38,6 +42,29 @@ export default function Webinars() {
     }
   };
 
+  // 3. Logic to open modal in Edit Mode
+  const handleEdit = (webinar) => {
+    setEditingId(webinar._id);
+    setFormData({
+      title: webinar.title || "",
+      description: webinar.description || "",
+      // Format date for datetime-local input (YYYY-MM-DDTHH:mm)
+      date: webinar.date ? new Date(webinar.date).toISOString().slice(0, 16) : "",
+      duration: webinar.duration || "",
+      speaker: webinar.speaker || "",
+      videoUrl: webinar.videoUrl || "",
+      registrationLink: webinar.registrationLink || "",
+      image: webinar.image || ""
+    });
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditingId(null);
+    resetForm();
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Remove this webinar from the platform?")) return;
     const toastId = toast.loading("Removing webinar...");
@@ -53,16 +80,22 @@ export default function Webinars() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const toastId = toast.loading("Publishing to hub...");
+    const toastId = toast.loading(editingId ? "Updating session..." : "Publishing to hub...");
     
     try {
-      await createWebinar(formData);
-      toast.success("Webinar published successfully!", { id: toastId });
-      setShowModal(false);
-      resetForm();
+      if (editingId) {
+        // 4. Call Update API
+        await updateWebinar(editingId, formData);
+        toast.success("Webinar updated successfully!", { id: toastId });
+      } else {
+        // Call Create API
+        await createWebinar(formData);
+        toast.success("Webinar published successfully!", { id: toastId });
+      }
+      handleCloseModal();
       fetchWebinars();
     } catch (err) {
-      toast.error("Error creating webinar. Check your inputs.", { id: toastId });
+      toast.error("Operation failed. Check your inputs.", { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
@@ -82,7 +115,7 @@ export default function Webinars() {
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-6 py-3.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-900/10 active:scale-95"
+          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-6 py-3.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg active:scale-95"
         >
           <Plus size={18} /> Schedule Webinar
         </button>
@@ -134,14 +167,18 @@ export default function Webinars() {
 
                 <div className="mt-auto pt-5 border-t border-slate-50 flex items-center justify-between">
                   <div className="flex gap-1.5">
+                    {/* 5. ADDED EDIT BUTTON IN LIST */}
+                    <button 
+                      onClick={() => handleEdit(webinar)}
+                      className="p-2 bg-slate-50 rounded-lg text-slate-400 hover:text-[#3866A3] transition-colors"
+                      title="Edit Webinar"
+                    >
+                      <Pencil size={16} />
+                    </button>
+
                     {webinar.videoUrl && (
                       <a href={webinar.videoUrl} target="_blank" rel="noreferrer" className="p-2 bg-slate-50 rounded-lg text-slate-400 hover:text-red-500 transition-colors" title="Watch Video">
                         <PlayCircle size={16} />
-                      </a>
-                    )}
-                    {webinar.registrationLink && (
-                      <a href={webinar.registrationLink} target="_blank" rel="noreferrer" className="p-2 bg-slate-50 rounded-lg text-slate-400 hover:text-[#3866A3] transition-colors" title="External Link">
-                        <Globe size={16} />
                       </a>
                     )}
                   </div>
@@ -155,18 +192,20 @@ export default function Webinars() {
         </div>
       )}
 
-      {/* Moderate Size Modal */}
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-slate-50 bg-white">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 bg-[#3866A3]/10 text-[#3866A3] rounded-lg">
                   <Video size={18} />
                 </div>
-                <h2 className="text-lg font-black text-slate-800 uppercase tracking-tight">Schedule Webinar</h2>
+                <h2 className="text-lg font-black text-slate-800 uppercase tracking-tight">
+                  {editingId ? "Edit Webinar" : "Schedule Webinar"}
+                </h2>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+              <button onClick={handleCloseModal} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
                 <X size={20} />
               </button>
             </div>
@@ -174,51 +213,51 @@ export default function Webinars() {
             <form onSubmit={handleSubmit} className="p-6 max-h-[80vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Session Title</label>
-                  <input required type="text" className="w-full text-slate-700 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#3866A3]/10 focus:border-[#3866A3] outline-none font-bold text-sm"
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-1.5 block ml-1">Session Title</label>
+                  <input required type="text" className="w-full text-slate-700 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none font-bold text-sm"
                     value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="Title of the session" />
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Speaker</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-1.5 block ml-1">Speaker</label>
                   <input required type="text" className="w-full text-slate-600 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-sm"
                     value={formData.speaker} onChange={(e) => setFormData({...formData, speaker: e.target.value})} placeholder="Name" />
                 </div>
 
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Date & Time</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-1.5 block ml-1">Date & Time</label>
                   <input required type="datetime-local" className="w-full px-4 py-3 bg-slate-50 text-slate-600 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-sm"
                     value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Summary</label>
-                  <textarea rows="3" required className="w-full text-slate-600 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none resize-none text-sm leading-relaxed"
-                    value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Briefly explain the session goals..." />
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-1.5 block ml-1">Summary</label>
+                  <textarea rows="3" required className="w-full text-slate-600 px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none resize-none text-sm"
+                    value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Video Link (YouTube/Vimeo)</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-1.5 block ml-1">Video Link (YouTube/Vimeo)</label>
                   <input type="url" className="w-full px-4 py-3 bg-slate-50 text-slate-600 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-sm"
                     value={formData.videoUrl} onChange={(e) => setFormData({...formData, videoUrl: e.target.value})} placeholder="https://..." />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Registration Link (Live Event)</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-1.5 block ml-1">Registration Link (Live Event)</label>
                   <input type="url" className="w-full px-4 py-3 text-slate-600 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-sm"
                     value={formData.registrationLink} onChange={(e) => setFormData({...formData, registrationLink: e.target.value})} placeholder="Zoom or Google Meet Link" />
                 </div>
               </div>
 
               <div className="flex gap-3 mt-8">
-                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 bg-slate-50 text-slate-500 font-bold rounded-xl hover:bg-slate-100 transition-all text-xs uppercase tracking-widest">Discard</button>
+                <button type="button" onClick={handleCloseModal} className="flex-1 py-3 bg-slate-50 text-slate-500 font-bold rounded-xl text-xs uppercase">Discard</button>
                 <button 
                   type="submit" 
                   disabled={isSubmitting} 
-                  className="flex-[2] py-3 bg-[#3866A3] text-white font-bold rounded-xl hover:bg-[#2d5284] transition-all shadow-lg shadow-blue-900/10 flex items-center justify-center gap-2 text-xs uppercase tracking-widest disabled:opacity-70"
+                  className="flex-[2] py-3 bg-[#3866A3] text-white font-bold rounded-xl hover:bg-[#2d5284] transition-all flex items-center justify-center gap-2 text-xs uppercase disabled:opacity-70"
                 >
                   {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                  {isSubmitting ? "Processing..." : "Publish Session"}
+                  {isSubmitting ? "Processing..." : (editingId ? "Save Changes" : "Publish Session")}
                 </button>
               </div>
             </form>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getAllPressReleases, createPressRelease, deletePressRelease } from "../api/apiServices";
+// Added updatePressRelease to imports
+import { getAllPressReleases, createPressRelease, deletePressRelease, updatePressRelease } from "../api/apiServices";
 import { 
-  Newspaper, Plus, Trash2, Loader2, ChevronRight, Eye, X, Save
+  Newspaper, Plus, Trash2, Loader2, ChevronRight, Eye, X, Save, Pencil 
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -10,6 +11,9 @@ export default function PressRelease() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // --- NEW STATE FOR EDITING ---
+  const [editingId, setEditingId] = useState(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -35,6 +39,28 @@ export default function PressRelease() {
     }
   };
 
+  // --- HANDLER: PREPARE EDIT ---
+  const handleEdit = (release) => {
+    setEditingId(release._id);
+    setFormData({
+      title: release.title || "",
+      summary: release.summary || "",
+      content: release.content || "",
+      // Ensure date is in YYYY-MM-DD format for the input
+      publicationDate: release.publicationDate ? new Date(release.publicationDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      author: release.author || "Communications Team",
+      image: release.image || ""
+    });
+    setShowModal(true);
+  };
+
+  // --- HANDLER: CLOSE/RESET ---
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditingId(null);
+    resetForm();
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this announcement?")) return;
     const toastId = toast.loading("Deleting release...");
@@ -50,16 +76,22 @@ export default function PressRelease() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const toastId = toast.loading("Publishing release...");
+    const toastId = toast.loading(editingId ? "Updating release..." : "Publishing release...");
     
     try {
-      await createPressRelease(formData);
-      toast.success("Press release published!", { id: toastId });
-      setShowModal(false);
-      resetForm();
+      if (editingId) {
+        // CALL UPDATE API
+        await updatePressRelease(editingId, formData);
+        toast.success("Press release updated!", { id: toastId });
+      } else {
+        // CALL CREATE API
+        await createPressRelease(formData);
+        toast.success("Press release published!", { id: toastId });
+      }
+      handleCloseModal();
       fetchReleases();
     } catch (err) {
-      toast.error("Error publishing. Check all fields.", { id: toastId });
+      toast.error("Error processing. Check all fields.", { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
@@ -75,7 +107,6 @@ export default function PressRelease() {
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen">
-      {/* Header */}
       <div className="flex justify-between mt-10 items-center mb-10">
         <div>
           <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Press Center</h1>
@@ -83,7 +114,7 @@ export default function PressRelease() {
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-900/10 active:scale-95"
+          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg active:scale-95"
         >
           <Plus size={20} /> Create Release
         </button>
@@ -119,10 +150,19 @@ export default function PressRelease() {
               </div>
 
               <div className="flex items-center gap-3 pr-4">
-                <button className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-[#3866A3] transition-all" title="View">
-                  <Eye size={18} />
+                {/* EDIT BUTTON */}
+                <button 
+                  onClick={() => handleEdit(release)}
+                  className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-[#3866A3] transition-all" 
+                  title="Edit"
+                >
+                  <Pencil size={18} />
                 </button>
-                <button onClick={() => handleDelete(release._id)} className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-rose-500 transition-all" title="Delete">
+                <button 
+                  onClick={() => handleDelete(release._id)} 
+                  className="p-3 bg-slate-50 rounded-xl text-slate-400 hover:text-rose-500 transition-all" 
+                  title="Delete"
+                >
                   <Trash2 size={18} />
                 </button>
                 <ChevronRight className="text-slate-200 group-hover:text-[#3866A3] group-hover:translate-x-1 transition-all" />
@@ -132,18 +172,19 @@ export default function PressRelease() {
         </div>
       )}
 
-      {/* Editor Modal - Now Moderate Size */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between p-8 border-b border-slate-50">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-[#3866A3]/10 text-[#3866A3] rounded-xl">
                   <Newspaper size={20} />
                 </div>
-                <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">Draft Release</h2>
+                <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+                  {editingId ? "Edit Release" : "Draft Release"}
+                </h2>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+              <button onClick={handleCloseModal} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
                 <X size={20} />
               </button>
             </div>
@@ -152,7 +193,7 @@ export default function PressRelease() {
               <div className="space-y-5">
                 <div>
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Headline</label>
-                  <input required type="text" className="w-full text-slate-700 px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-[#3866A3]/20 focus:border-[#3866A3] outline-none font-bold"
+                  <input required type="text" className="w-full text-slate-700 px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none font-bold"
                     value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="Main Announcement Title" />
                 </div>
 
@@ -183,14 +224,14 @@ export default function PressRelease() {
               </div>
 
               <div className="flex gap-3 mt-8">
-                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3.5 bg-slate-50 text-slate-500 font-bold rounded-xl hover:bg-slate-100 transition-all text-sm">Discard</button>
+                <button type="button" onClick={handleCloseModal} className="flex-1 py-3.5 bg-slate-50 text-slate-500 font-bold rounded-xl text-sm">Discard</button>
                 <button 
                   type="submit" 
                   disabled={isSubmitting} 
-                  className="flex-[2] py-3.5 bg-[#3866A3] text-white font-bold rounded-xl hover:bg-[#2d5284] transition-all shadow-lg shadow-blue-900/10 flex items-center justify-center gap-2 text-sm"
+                  className="flex-[2] py-3.5 bg-[#3866A3] text-white font-bold rounded-xl hover:bg-[#2d5284] transition-all shadow-lg flex items-center justify-center gap-2 text-sm"
                 >
                   {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-                  {isSubmitting ? "Publishing..." : "Publish Release"}
+                  {isSubmitting ? "Processing..." : (editingId ? "Update Release" : "Publish Release")}
                 </button>
               </div>
             </form>

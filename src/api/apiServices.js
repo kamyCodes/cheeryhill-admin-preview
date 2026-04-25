@@ -225,10 +225,17 @@ export const createTestimonial = async (data) => {
   return res.data.data;
 };
 
+
 export const updateTestimonial = async (id, data) => {
   const res = await apiClient.put(`/api/v1/admin/testimonials/${id}`, data);
   return res.data.data;
 };
+
+
+// export const updateTestimonial = async (id, data) => {
+//   const res = await apiClient.put(`/api/v1/admin/testimonials/${id}`, data);
+//   return res.data.data;
+// };
 
 export const deleteTestimonial = async (id) => {
   const res = await apiClient.delete(`/api/v1/admin/testimonials/${id}`);
@@ -424,3 +431,7 @@ export const getDashboardSummary = async () => {
     lastUpdated: info.updatedAt
   };
 };
+
+
+
+
