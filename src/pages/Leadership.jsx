@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   getAllLeadership, createLeadership, 
   updateLeadership, deleteLeadership 
@@ -6,7 +6,7 @@ import {
 import { 
   UserPlus, Trash2, Edit3, Loader2, 
   Linkedin, Mail, User, Briefcase, 
-  ArrowUpDown, X, Save
+  X, Save, Camera, Upload
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -16,6 +16,8 @@ export default function Leadership() {
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -24,7 +26,7 @@ export default function Leadership() {
     email: "",
     linkedin: "",
     order: 1,
-    image: ""
+    image: null
   });
 
   useEffect(() => {
@@ -34,7 +36,6 @@ export default function Leadership() {
   const fetchMembers = async () => {
     try {
       const data = await getAllLeadership();
-      // Sorting by order locally for better admin UX
       setMembers(data.sort((a, b) => a.order - b.order));
     } catch (err) {
       toast.error("Failed to load team members");
@@ -43,21 +44,46 @@ export default function Leadership() {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        return toast.error("Image too large (Max 2MB)");
+      }
+      setFormData({ ...formData, image: file });
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    const loadingToast = toast.loading(editingId ? "Updating profile..." : "Adding new leader...");
+
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("position", formData.position);
+    data.append("bio", formData.bio);
+    data.append("email", formData.email);
+    data.append("linkedin", formData.linkedin);
+    data.append("order", formData.order);
+    
+    if (formData.image instanceof File) {
+      data.append("image", formData.image);
+    }
+
     try {
       if (editingId) {
-        await updateLeadership(editingId, formData);
-        toast.success("Profile updated successfully");
+        await updateLeadership(editingId, data);
+        toast.success("Leader profile updated successfully!", { id: loadingToast });
       } else {
-        await createLeadership(formData);
-        toast.success("New leader added to the team");
+        await createLeadership(data);
+        toast.success("New leader added successfully!", { id: loadingToast });
       }
       closeModal();
       fetchMembers();
     } catch (err) {
-      toast.error("Operation failed. Please check inputs.");
+      toast.error(err.response?.data?.message || "Operation failed", { id: loadingToast });
     } finally {
       setIsSubmitting(false);
     }
@@ -72,41 +98,44 @@ export default function Leadership() {
       email: member.email || "",
       linkedin: member.linkedin || "",
       order: member.order,
-      image: member.image || ""
+      image: null
     });
+    setImagePreview(member.image);
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Remove this leader from the platform?")) return;
+    if (!window.confirm("Are you sure you want to delete this leader?")) return;
+    const delToast = toast.loading("Removing...");
     try {
       await deleteLeadership(id);
-      toast.success("Member removed");
+      toast.success("Member removed successfully", { id: delToast });
       fetchMembers();
     } catch (err) {
-      toast.error("Delete failed");
+      toast.error("Delete failed", { id: delToast });
     }
   };
 
   const closeModal = () => {
     setShowModal(false);
     setEditingId(null);
-    setFormData({ name: "", position: "", bio: "", email: "", linkedin: "", order: 1, image: "" });
+    setImagePreview(null);
+    setFormData({ name: "", position: "", bio: "", email: "", linkedin: "", order: 1, image: null });
   };
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen">
       {/* Header */}
-      <div className="flex justify-between mt-10 items-center mb-10">
+      <div className="flex flex-col md:flex-row justify-between mt-10 items-start md:items-center mb-10 gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Corporate Leadership</h1>
-          <p className="text-slate-500 font-medium mt-1">Manage the executives and board members of CherryHills.</p>
+          <p className="text-slate-500 font-medium mt-1">Manage executive profiles and hierarchy.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-900/10"
+          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-900/10 active:scale-95"
         >
-          <UserPlus size={20} /> Add Member
+          <UserPlus size={18} /> Add Member
         </button>
       </div>
 
@@ -115,51 +144,40 @@ export default function Leadership() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {members.map((member) => (
-            <div key={member._id} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition-all">
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-20 h-20 bg-slate-50 rounded-[1.5rem] flex items-center justify-center text-[#3866A3] overflow-hidden border border-slate-100">
+            <div key={member._id} className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition-all">
+              <div className="p-7">
+                <div className="flex justify-between items-start mb-5">
+                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-[#3866A3] overflow-hidden border border-slate-100 shadow-inner">
                     {member.image ? (
-                      <img src={member.image} alt="" className="w-full h-full object-cover" />
+                      <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
                     ) : (
-                      <User size={32} />
+                      <User size={24} />
                     )}
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="bg-slate-800 text-white text-[10px] font-black px-3 py-1 rounded-full mb-2">
-                      RANK: {member.order}
+                    <span className="bg-slate-800 text-white text-[9px] font-black px-2 py-1 rounded-md mb-2 uppercase">
+                      Rank: {member.order}
                     </span>
-                    <div className="flex gap-2">
-                      <button onClick={() => handleEdit(member)} className="p-2 bg-slate-50 text-slate-400 hover:text-[#3866A3] rounded-lg transition-colors">
-                        <Edit3 size={16} />
+                    <div className="flex gap-1.5">
+                      <button onClick={() => handleEdit(member)} className="p-2 bg-slate-50 text-slate-400 hover:text-[#3866A3] hover:bg-blue-50 rounded-lg transition-colors">
+                        <Edit3 size={14} />
                       </button>
                       <button onClick={() => handleDelete(member._id)} className="p-2 bg-rose-50 text-rose-400 hover:text-rose-600 rounded-lg transition-colors">
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">{member.name}</h3>
-                <p className="text-[#3866A3] font-bold text-sm mb-4 flex items-center gap-2">
-                  <Briefcase size={14} /> {member.position}
+                <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight line-clamp-1">{member.name}</h3>
+                <p className="text-[#3866A3] font-bold text-xs mb-3 flex items-center gap-1.5 uppercase">
+                  <Briefcase size={12} /> {member.position}
                 </p>
-                
-                <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 mb-6 font-medium">
-                  {member.bio}
-                </p>
+                <p className="text-slate-500 text-xs leading-relaxed line-clamp-2 mb-5 font-medium">{member.bio}</p>
 
-                <div className="flex gap-3 pt-6 border-t border-slate-50">
-                  {member.linkedin && (
-                    <a href={member.linkedin} target="_blank" rel="noreferrer" className="text-slate-300 hover:text-[#0077B5] transition-colors">
-                      <Linkedin size={18} />
-                    </a>
-                  )}
-                  {member.email && (
-                    <a href={`mailto:${member.email}`} className="text-slate-300 hover:text-[#3866A3] transition-colors">
-                      <Mail size={18} />
-                    </a>
-                  )}
+                <div className="flex gap-3 pt-4 border-t border-slate-50">
+                  {member.linkedin && <a href={member.linkedin} target="_blank" rel="noreferrer" className="text-slate-300 hover:text-[#0077B5] transition-colors"><Linkedin size={16} /></a>}
+                  {member.email && <a href={`mailto:${member.email}`} className="text-slate-300 hover:text-[#3866A3] transition-colors"><Mail size={16} /></a>}
                 </div>
               </div>
             </div>
@@ -167,57 +185,82 @@ export default function Leadership() {
         </div>
       )}
 
-      {/* Profile Modal */}
+      {/* Moderate Profile Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-[3rem] p-12 shadow-2xl overflow-y-auto max-h-[90vh]">
-            <h2 className="text-2xl font-black text-slate-800 mb-2 uppercase tracking-tight">
-              {editingId ? "Edit Profile" : "New Leader"}
-            </h2>
-            <p className="text-slate-500 font-medium mb-10">Define corporate identity and authority.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-xl rounded-[2rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+              <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+                {editingId ? "Edit Profile" : "New Leader"}
+              </h2>
+              <button onClick={closeModal} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors text-slate-400"><X size={20} /></button>
+            </div>
             
-            <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
-              <div className="col-span-2 md:col-span-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Full Name</label>
-                <input required className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none font-bold"
-                  value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+            <form onSubmit={handleSubmit} className="p-8 max-h-[80vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-x-5 gap-y-4">
+                {/* Image Section - Integrated into Grid */}
+                <div className="col-span-2 flex items-center gap-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 mb-2">
+                  <div className="relative group cursor-pointer" onClick={() => fileInputRef.current.click()}>
+                    <div className="w-16 h-16 rounded-xl bg-white border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden">
+                      {imagePreview ? <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" /> : <Camera className="text-slate-300" size={24} />}
+                    </div>
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+                      <Upload className="text-white" size={16} />
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-700">Profile Photo</h4>
+                    <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={handleFileChange} />
+                    <button type="button" onClick={() => fileInputRef.current.click()} className="text-[10px] font-black text-[#3866A3] uppercase hover:underline">Click to upload</button>
+                  </div>
+                </div>
+
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Full Name</label>
+                  <input required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none font-bold text-slate-700 text-sm transition-all"
+                    value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                </div>
+
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Position</label>
+                  <input required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm transition-all"
+                    value={formData.position} onChange={(e) => setFormData({...formData, position: e.target.value})} />
+                </div>
+
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Email</label>
+                  <input type="email" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm transition-all"
+                    value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                </div>
+
+                <div className="col-span-2 sm:col-span-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Rank Order</label>
+                  <input type="number" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm transition-all"
+                    value={formData.order} onChange={(e) => setFormData({...formData, order: e.target.value})} />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">LinkedIn URL</label>
+                  <input type="url" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none text-slate-700 text-sm transition-all"
+                    value={formData.linkedin} onChange={(e) => setFormData({...formData, linkedin: e.target.value})} />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Biography</label>
+                  <textarea rows="3" required className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:border-[#3866A3] outline-none resize-none leading-relaxed text-slate-600 text-sm transition-all"
+                    value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})} />
+                </div>
               </div>
 
-              <div className="col-span-2 md:col-span-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Position</label>
-                <input required className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
-                  value={formData.position} onChange={(e) => setFormData({...formData, position: e.target.value})} />
-              </div>
-
-              <div className="col-span-2 md:col-span-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Email Address</label>
-                <input type="email" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 text-gray-500 rounded-2xl focus:border-[#3866A3] outline-none"
-                  value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
-              </div>
-
-              <div className="col-span-2 md:col-span-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">LinkedIn URL</label>
-                <input type="url" className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
-                  value={formData.linkedin} onChange={(e) => setFormData({...formData, linkedin: e.target.value})} />
-              </div>
-
-              <div className="col-span-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Hierarchy Order (e.g., 1 for CEO)</label>
-                <input type="number" className="w-full px-5 py-4 bg-slate-50 text-gray-500 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
-                  value={formData.order} onChange={(e) => setFormData({...formData, order: e.target.value})} />
-              </div>
-
-              <div className="col-span-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Executive Biography</label>
-                <textarea rows="4" required className="w-full px-5 py-4 bg-slate-50 border text-gray-500 border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none resize-none leading-relaxed"
-                  value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})} />
-              </div>
-
-              <div className="col-span-2 flex gap-4 mt-6">
-                <button type="button" onClick={closeModal} className="flex-1 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all text-gray-500">Cancel</button>
-                <button type="submit" disabled={isSubmitting} className="flex-1 py-4 bg-[#3866A3] text-white font-bold rounded-2xl hover:bg-[#2d5284] transition-all flex items-center justify-center gap-2">
-                  {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-                  {editingId ? "Update Profile" : "Save Leader"}
+              <div className="flex gap-3 mt-8">
+                <button type="button" onClick={closeModal} className="flex-1 py-3 bg-slate-100 text-slate-500 font-bold rounded-xl hover:bg-slate-200 transition-all text-xs">Discard</button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting} 
+                  className="flex-[2] py-3 bg-[#3866A3] text-white font-bold rounded-xl hover:bg-[#2d5284] transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10 disabled:opacity-70 text-xs"
+                >
+                  {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                  {editingId ? "Update Profile" : "Publish Profile"}
                 </button>
               </div>
             </form>
