@@ -416,8 +416,8 @@ export const updateCompanyInfo = async (data) => {
   return res.data.data;
 };
 
+// From your apiServices:
 export const updateCompanyStats = async (statsData) => {
-  // Use PATCH for specific stats updates (Clients, Assets, etc.)
   const res = await apiClient.patch("/api/v1/admin/company-info/stats", { stats: statsData });
   return res.data.data;
 };
