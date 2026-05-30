@@ -418,8 +418,9 @@ export const updateCompanyInfo = async (data) => {
 
 // From your apiServices:
 export const updateCompanyStats = async (statsData) => {
-  const res = await apiClient.patch("/api/v1/admin/company-info/stats", { stats: statsData });
-  return res.data.data;
+  // Pass statsData directly so the fields sit flat on the request body
+  const res = await apiClient.patch("/api/v1/admin/company-info/stats", statsData);
+  return res.data;
 };
 
 
