@@ -71,7 +71,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const base_url = "https://cherry.dealdrivetechnology.com";
+const base_url = import.meta.env.VITE_API_URL || "https://cherry.dealdrivetechnology.com";
 
 // ------------------- MAIN API CLIENT -------------------
 
