@@ -37,22 +37,22 @@ export default function Sidebar() {
   const navLinkClasses = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-semibold transition-all duration-200 ${
       isActive 
-        ? "bg-[#3866A3] text-white shadow-md" 
-        : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+        ? "bg-emerald-500 text-white shadow-md" 
+        : "text-neutral-600 hover:bg-emerald-50 hover:text-navy"
     }`;
 
   return (
     <div className="w-72 bg-white h-screen flex flex-col fixed left-0 top-0 border-r border-slate-100 shadow-sm z-[100]">
       {/* Brand Section */}
       <div className="px-8 py-10">
-        <h2 className="font-black text-xl tracking-tighter text-slate-800">CHERRYHILLS</h2>
-        <p className="text-[10px] font-black text-[#3866A3] uppercase tracking-[0.2em] mt-1">Admin Intelligence</p>
+        <h2 className="font-display font-bold text-xl text-navy tracking-tight">CHERRY HILLS</h2>
+        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mt-1">Portfolio Management</p>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4 overflow-y-auto space-y-6 pb-6 custom-scrollbar">
         <div>
-          <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Main</p>
+          <p className="px-4 text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-3">Main</p>
           <NavLink to="/dashboard" end className={navLinkClasses}>
             <LayoutGrid size={18} />
             Overview
@@ -60,7 +60,7 @@ export default function Sidebar() {
         </div>
 
         <div>
-          <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Content Hub</p>
+          <p className="px-4 text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em] mb-3">Content Hub</p>
           <div className="space-y-1">
             {contentItems.map((item) => (
               <NavLink key={item.to} to={item.to} className={navLinkClasses}>
@@ -76,7 +76,7 @@ export default function Sidebar() {
       <div className="p-6 border-t border-slate-50 bg-slate-50/30">
         <button 
           onClick={handleLogout} 
-          className="flex items-center gap-3 w-full px-4 py-3 text-rose-500 hover:bg-rose-100/50 rounded-xl text-[14px] font-black transition-all group"
+          className="flex items-center gap-3 w-full px-4 py-3 text-coral hover:bg-coral-50 rounded-xl text-[14px] font-black transition-all group"
         >
           <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
           Logout

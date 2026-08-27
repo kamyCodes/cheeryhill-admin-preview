@@ -1,20 +1,99 @@
-/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
 @import 'antd/dist/reset.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .all-\[unset\] {
-    all: unset;
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: #FFFFFF;
+    color: #1C2430;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #1C2430;
   }
 }
 
-body{
-  background-color: white;
+@layer components {
+  /* Full-pill CTA buttons */
+  .btn-primary-cta {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-coral text-white font-bold text-sm rounded-pill shadow-cta hover:bg-coral-600 hover:shadow-lg transition-all duration-300 active:scale-[0.97];
+  }
+
+  .btn-secondary-cta {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white text-navy font-bold text-sm rounded-pill shadow-md hover:shadow-lg hover:bg-navy-50 transition-all duration-300 active:scale-[0.97];
+  }
+
+  /* Glassmorphism stat card */
+  .glass-stat-card {
+    @apply relative overflow-hidden rounded-2xl p-6 backdrop-blur-md bg-white/80 border border-white/60 shadow-glass hover:shadow-card-hover transition-all duration-300;
+  }
+
+  .glass-stat-card-dark {
+    @apply relative overflow-hidden rounded-2xl p-6 backdrop-blur-md bg-navy/90 border border-white/10 shadow-glass-lg;
+  }
+
+  /* Uppercase letter-spaced labels */
+  .stat-label {
+    @apply text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em];
+  }
+
+  .stat-value-green {
+    @apply text-3xl font-black text-emerald-500;
+  }
+
+  .stat-value-orange {
+    @apply text-3xl font-black text-coral;
+  }
+
+  /* Sidebar active state */
+  .nav-active {
+    @apply bg-emerald-500 text-white shadow-brand;
+  }
+
+  .nav-inactive {
+    @apply text-neutral-600 hover:bg-emerald-50 hover:text-navy;
+  }
 }
 
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 100px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
 
+/* Glassmorphism backdrop for dark cards */
+.glass-backdrop {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
 
 svg {
   vertical-align: initial;

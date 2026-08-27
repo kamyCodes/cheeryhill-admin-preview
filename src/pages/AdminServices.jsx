@@ -331,16 +331,16 @@ export default function AdminServices() {
   };
 
   return (
-    <div className="p-8 bg-slate-50 min-h-screen">
+    <div className="p-8 bg-white min-h-screen">
       {/* Header */}
       <div className="flex justify-between mt-10 items-end mb-10">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase">Services</h1>
-          <p className="text-slate-500 font-medium mt-1">Configure your platform's core investment offerings.</p>
+          <h1 className="text-3xl font-black text-navy tracking-tight uppercase">Services</h1>
+          <p className="text-neutral-500 font-medium mt-1">Configure your platform's core investment offerings.</p>
         </div>
         <button 
           onClick={handleOpenCreateModal}
-          className="bg-[#3866A3] hover:bg-[#2d5284] text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-900/10 cursor-pointer"
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-900/10 cursor-pointer"
         >
           <Plus size={20} /> Create Service
         </button>
@@ -349,40 +349,40 @@ export default function AdminServices() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="animate-spin text-[#3866A3] mb-4" size={40} />
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Syncing Services...</p>
+          <p className="text-neutral-400 font-bold uppercase tracking-widest text-xs">Syncing Services...</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {services.map((service) => (
-            <div key={service._id} className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+            <div key={service._id} className="bg-white rounded-[2.5rem] p-8 border border-neutral-100 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
               {/* Status Badge */}
               <div className={`absolute top-6 right-6 flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-widest ${
-                service.isActive ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-400'
+                service.isActive ? 'bg-green-50 text-green-600' : 'bg-neutral-100 text-neutral-400'
               }`}>
                 <div className={`w-1.5 h-1.5 rounded-full ${service.isActive ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`} />
                 {service.isActive ? "LIVE" : "DRAFT"}
               </div>
 
               {/* Icon & Title */}
-              <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                {service.icon ? <img src={service.icon} alt="" className="w-8 h-8 object-contain" /> : <LayoutGrid className="text-slate-300" />}
+              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                {service.icon ? <img src={service.icon} alt="" className="w-8 h-8 object-contain" /> : <LayoutGrid className="text-neutral-300" />}
               </div>
               
-              <h3 className="text-xl font-black text-slate-800 mb-2 truncate">{service.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-2 font-medium">{service.summary}</p>
+              <h3 className="text-xl font-black text-navy mb-2 truncate">{service.title}</h3>
+              <p className="text-neutral-500 text-sm leading-relaxed mb-6 line-clamp-2 font-medium">{service.summary}</p>
 
               {/* Features Preview */}
               <div className="flex flex-wrap gap-2 mb-8">
                 {Array.isArray(service.features) && service.features.length > 0 ? (
                   // Handle if backend features are already an array
                   service.features.slice(0, 3).map((f, i) => (
-                    <span key={i} className="text-[10px] font-bold bg-slate-50 text-slate-500 px-2.5 py-1 rounded-lg uppercase">
+                    <span key={i} className="text-[10px] font-bold bg-white text-neutral-500 px-2.5 py-1 rounded-lg uppercase">
                       {f}
                     </span>
                   ))
                 ) : service.features?.[0]?.split(',').slice(0, 3).map((f, i) => (
                   // Fallback to split string
-                  <span key={i} className="text-[10px] font-bold bg-slate-50 text-slate-500 px-2.5 py-1 rounded-lg uppercase">
+                  <span key={i} className="text-[10px] font-bold bg-white text-neutral-500 px-2.5 py-1 rounded-lg uppercase">
                     {f}
                   </span>
                 ))}
@@ -391,10 +391,10 @@ export default function AdminServices() {
               {/* Action Footer */}
               <div className="flex items-center justify-between pt-6 border-t border-slate-50">
                 <div className="flex gap-2">
-                  <button onClick={() => handleToggle(service._id)} className="p-2.5 bg-slate-50 rounded-xl text-slate-400 hover:text-[#3866A3] transition-colors cursor-pointer">
+                  <button onClick={() => handleToggle(service._id)} className="p-2.5 bg-white rounded-xl text-neutral-400 hover:text-[#3866A3] transition-colors cursor-pointer">
                     <Power size={18} />
                   </button>
-                  <button onClick={() => handleDelete(service._id)} className="p-2.5 bg-slate-50 rounded-xl text-slate-400 hover:text-rose-500 transition-colors cursor-pointer">
+                  <button onClick={() => handleDelete(service._id)} className="p-2.5 bg-white rounded-xl text-neutral-400 hover:text-coral transition-colors cursor-pointer">
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -414,47 +414,47 @@ export default function AdminServices() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm">
           <div className="bg-white w-full max-w-2xl rounded-[3rem] p-12 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
-            <h2 className="text-3xl font-black text-slate-800 mb-2 uppercase tracking-tight">
+            <h2 className="text-3xl font-black text-navy mb-2 uppercase tracking-tight">
               {editingId ? "Modify Service" : "Add Service"}
             </h2>
-            <p className="text-slate-500 font-medium mb-10">
+            <p className="text-neutral-500 font-medium mb-10">
               {editingId ? "Update configurations for this investment category." : "Define a new investment category for the platform."}
             </p>
             
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
               <div className="col-span-2 md:col-span-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Service Title</label>
-                <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none transition-all"
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 block ml-1">Service Title</label>
+                <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-white border border-neutral-100 rounded-2xl focus:border-[#3866A3] outline-none transition-all"
                   value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="e.g. Wealth Management" />
               </div>
               
               <div className="col-span-2 md:col-span-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Icon URL (Cloudinary)</label>
-                <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 text-gray-500 rounded-2xl focus:border-[#3866A3] outline-none"
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 block ml-1">Icon URL (Cloudinary)</label>
+                <input type="text" className="w-full px-5 py-4 bg-white border border-neutral-100 text-gray-500 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.icon} onChange={(e) => setFormData({...formData, icon: e.target.value})} placeholder="https://..." />
               </div>
 
               <div className="col-span-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Summary (Catchy Hook)</label>
-                <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none"
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 block ml-1">Summary (Catchy Hook)</label>
+                <input required type="text" className="w-full text-gray-500 px-5 py-4 bg-white border border-neutral-100 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.summary} onChange={(e) => setFormData({...formData, summary: e.target.value})} placeholder="Brief one-liner..." />
               </div>
 
               <div className="col-span-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Full Description</label>
-                <textarea rows="4" required className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-[#3866A3] outline-none text-gray-500 resize-none"
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 block ml-1">Full Description</label>
+                <textarea rows="4" required className="w-full px-5 py-4 bg-white border border-neutral-100 rounded-2xl focus:border-[#3866A3] outline-none text-gray-500 resize-none"
                   value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Detailed explanation..." />
               </div>
 
               <div className="col-span-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Key Features (Comma Separated)</label>
-                <input type="text" className="w-full px-5 py-4 bg-slate-50 border border-slate-100 text-gray-500 rounded-2xl focus:border-[#3866A3] outline-none"
+                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2 block ml-1">Key Features (Comma Separated)</label>
+                <input type="text" className="w-full px-5 py-4 bg-white border border-neutral-100 text-gray-500 rounded-2xl focus:border-[#3866A3] outline-none"
                   value={formData.features} onChange={(e) => setFormData({...formData, features: e.target.value})} placeholder="Risk Assessment, Portfolio Tracking, 24/7 Support" />
               </div>
 
               <div className="col-span-2 flex gap-4 mt-6">
-                <button type="button" onClick={() => { setShowModal(false); setEditingId(null); }} className="flex-1 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all cursor-pointer">Cancel</button>
-                <button type="submit" disabled={isSubmitting} className="flex-1 py-4 bg-[#3866A3] text-white font-bold rounded-2xl hover:bg-[#2d5284] transition-all disabled:opacity-50 shadow-lg shadow-blue-900/10 cursor-pointer">
+                <button type="button" onClick={() => { setShowModal(false); setEditingId(null); }} className="flex-1 py-4 bg-neutral-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all cursor-pointer">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="flex-1 py-4 bg-emerald-500 text-white font-bold rounded-2xl hover:bg-emerald-600 transition-all disabled:opacity-50 shadow-lg shadow-blue-900/10 cursor-pointer">
                   {isSubmitting ? "Uploading..." : editingId ? "Save Changes" : "Publish Service"}
                 </button>
               </div>
